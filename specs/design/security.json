@@ -1,0 +1,60 @@
+{
+  "version": 3,
+  "permissions": [
+    {
+      "resource": "claims",
+      "component": "expense-api",
+      "description": "Expense claims and their approval",
+      "actions": [
+        { "handle": "read", "description": "The caller's own claims" },
+        { "handle": "submit", "description": "Create and send a claim" },
+        { "handle": "edit", "description": "Edit a pending claim of the caller's" },
+        { "handle": "withdraw", "description": "Withdraw a pending claim of the caller's" },
+        { "handle": "review-team", "description": "The caller's direct reports' claims" },
+        { "handle": "approve", "description": "Approve a submitted claim" },
+        { "handle": "reject", "description": "Reject a submitted claim" },
+        { "handle": "read-all", "description": "Every claim" },
+        { "handle": "export", "description": "Export approved claims to payroll" }
+      ]
+    },
+    {
+      "resource": "notifications",
+      "component": "expense-api",
+      "description": "In-app notifications",
+      "actions": [
+        { "handle": "read", "description": "The caller's own notifications" }
+      ]
+    }
+  ],
+  "groups": [],
+  "roles": [
+    {
+      "name": "Employee",
+      "description": "Submits and tracks their own expense claims.",
+      "stories": ["F1.1", "F1.2", "F1.3", "F1.4", "F1.5", "F1.6", "F1.7", "F4.2"],
+      "grants": ["claims:read", "claims:submit", "claims:edit", "claims:withdraw", "notifications:read"],
+      "assignTo": ["Employees"]
+    },
+    {
+      "name": "Manager",
+      "description": "Reviews and decides on their direct reports' expense claims.",
+      "stories": ["F2.1", "F2.2", "F2.3", "F2.4", "F4.1"],
+      "grants": ["claims:review-team", "claims:approve", "claims:reject", "notifications:read"],
+      "assignTo": ["Managers"]
+    },
+    {
+      "name": "PayrollExporter",
+      "description": "Exports approved expense claims to payroll.",
+      "stories": ["F3.1", "F3.2", "F3.3"],
+      "grants": ["claims:read-all", "claims:export"],
+      "assignTo": ["Finance"]
+    }
+  ],
+  "testUsers": [
+    { "username": "test-employee", "roles": ["Employee"] },
+    { "username": "test-employee2", "roles": ["Employee"] },
+    { "username": "test-manager", "roles": ["Manager"] },
+    { "username": "test-manager2", "roles": ["Manager"] },
+    { "username": "test-payroll-exporter", "roles": ["PayrollExporter"] }
+  ]
+}
