@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "component": "receipt-agent",
+  "scenarios": [
+    {
+      "id": "SC-001",
+      "criteria": ["F1.3"],
+      "brief": {
+        "goal": "Read my receipt and tell me the amount, date and merchant.",
+        "facts": { "amount": "$42.50", "date": "2026-10-01", "merchant": "Downtown Diner" },
+        "withholds": []
+      },
+      "rubric": {
+        "mustCover": [
+          { "id": "MC-1", "must": "Reports the amount, date and merchant exactly as shown on the attached receipt", "weight": 2 }
+        ],
+        "mustNot": [
+          { "id": "MN-1", "mustNot": "States a category or approval decision for the claim" },
+          { "id": "MN-2", "mustNot": "Invents a value not visible on the receipt" }
+        ]
+      }
+    },
+    {
+      "id": "SC-002",
+      "criteria": ["F1.3"],
+      "brief": {
+        "goal": "I uploaded a receipt but the merchant name is torn off — tell me what you can read.",
+        "facts": { "amount": "$18.00", "date": "2026-09-28" },
+        "withholds": []
+      },
+      "rubric": {
+        "mustCover": [
+          { "id": "MC-1", "must": "Reports the amount and date it could read", "weight": 1 },
+          { "id": "MC-2", "must": "Says plainly that the merchant could not be read, rather than guessing one", "weight": 2 }
+        ],
+        "mustNot": [
+          { "id": "MN-1", "mustNot": "Invents a merchant name" }
+        ]
+      }
+    }
+  ]
+}
