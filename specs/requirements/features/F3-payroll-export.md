@@ -18,3 +18,4 @@ Needs: F2.
 - No payroll system is named yet; the export format stays generic until one is chosen, at design time.
 - Exports run on demand, not on a schedule.
 - Each approved claim is exported exactly once.
+
