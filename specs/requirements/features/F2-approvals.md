@@ -18,3 +18,4 @@ Needs: F1.
 - A claim is approved by the employee's direct manager only; there is no delegate or alternate approver.
 - Manager approval is final — there is no second approval level, regardless of amount.
 - Rejecting a claim always requires a reason.
+
