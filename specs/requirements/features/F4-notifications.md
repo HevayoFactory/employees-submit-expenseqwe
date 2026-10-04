@@ -15,3 +15,4 @@ Needs: F1, F2.
 
 - Notifications are in-app only; there is no email delivery.
 - Notifications fire on submission and on decision only; there is no reminder for claims pending too long.
+

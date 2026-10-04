@@ -1,0 +1,17 @@
+{
+  "name": "receipt-agent",
+  "type": "ai-agent",
+  "version": "0.1.0",
+  "language": "TypeScript",
+  "buildpack": "docker",
+  "appPath": "receipt-agent",
+  "entrypoint": "deployment/ai-agent",
+  "exposure": "internet",
+  "dependencies": [
+    { "kind": "platform-resource", "name": "thunder-auth", "resourceType": "thunder-app", "description": "Gates every call on the signed-in employee uploading a receipt." },
+    { "kind": "platform-resource", "name": "receipt-memory-db", "resourceType": "postgres-cnpg", "description": "Server-held conversation store for the agent's own chat history." }
+  ],
+  "description": "Reads an uploaded receipt image or PDF and extracts the amount, date and merchant so the employee can confirm or edit them before submitting a claim. Calls no other component's API — it only reads the attachment it is given and returns structured fields. Never decides a claim's category or approval.",
+  "stories": ["F1.3"],
+  "skillsPinned": ["agent-building"]
+}

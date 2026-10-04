@@ -1,0 +1,151 @@
+openapi: 3.0.3
+info:
+  title: Expense API
+  version: 0.1.0
+  description: Expense claims, approvals, payroll export and notifications.
+servers:
+  - url: /
+paths:
+  /me/claims:
+    get:
+      operationId: listMyClaims
+      summary: The caller's own expense claims
+      security:
+        - oauth2: [claims:read]
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20, maximum: 100 }
+        - name: offset
+          in: query
+          schema: { type: integer, default: 0 }
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, approved, rejected] }
+      responses:
+        '200':
+          description: A page of the caller's claims
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [count, data]
+                properties:
+                  count: { type: integer, description: total matching items }
+                  next: { type: string, nullable: true, description: relative URI of the next page }
+                  previous: { type: string, nullable: true, description: relative URI of the previous page }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/ExpenseClaim' }
+        '401':
+          description: Not signed in
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      operationId: submitClaim
+      summary: Create and submit a new expense claim
+      security:
+        - oauth2: [claims:submit]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ExpenseClaimCreate' }
+      responses:
+        '201':
+          description: Claim created and submitted for approval
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExpenseClaim' }
+        '400':
+          description: Missing a required field, or no receipt attached
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Not signed in
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /me/claims/{claimId}:
+    get:
+      operationId: getMyClaim
+      summary: One of the caller's own claims
+      security:
+        - oauth2: [claims:read]
+      parameters:
+        - $ref: '#/components/parameters/ClaimId'
+      responses:
+        '200':
+          description: The claim
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExpenseClaim' }
+        '404':
+          description: No such claim of the caller's
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    patch:
+      operationId: editMyClaim
+      summary: Edit a claim still pending a decision
+      security:
+        - oauth2: [claims:edit]
+      parameters:
+        - $ref: '#/components/parameters/ClaimId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ExpenseClaimUpdate' }
+      responses:
+        '200':
+          description: Updated claim
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExpenseClaim' }
+        '400':
+          description: The claim is no longer pending
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: No such claim of the caller's
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      operationId: withdrawMyClaim
+      summary: Withdraw a claim still pending a decision
+      security:
+        - oauth2: [claims:withdraw]
+      parameters:
+        - $ref: '#/components/parameters/ClaimId'
+      responses:
+        '204':
+          description: Claim withdrawn
+        '400':
+          description: The claim is no longer pending
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: No such claim of the caller's
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /me/team/claims:
+    get:
+      operationId: listTeamClaims
+      summary: Pending claims submitted by the caller's direct reports
+      security:
+        - oauth2: [claims:review-team]
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20, maximum: 100 }
+        - name: offset
+          in: query
+          schema: { type: integer, default: 0 }
+        - name: status
